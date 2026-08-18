@@ -25,6 +25,10 @@ function App() {
     password: 'password123',
   })
   const isInactive = status === 'INACTIVE'
+  const hasServingToken = queue.some((item) => item.status === 'SERVING')
+  const hasWaitingToken = queue.some((item) => item.status === 'WAITING')
+  const queueActionLabel = hasServingToken ? 'Finish' : 'Next Token'
+  const isQueueActionDisabled = loading || (!hasServingToken && !hasWaitingToken)
 
   const apiRequest = async (url, options = {}) => {
     const response = await fetch(`${API_URL}${url}`, {
@@ -115,6 +119,17 @@ function App() {
       setError(err.message)
     }
   }
+
+  const queueForDisplay = [...queue].sort((left, right) => {
+    const isLeftFinished = left.status === 'COMPLETED' || left.status === 'CANCELLED'
+    const isRightFinished = right.status === 'COMPLETED' || right.status === 'CANCELLED'
+
+    if (isLeftFinished !== isRightFinished) {
+      return isLeftFinished ? 1 : -1
+    }
+
+    return right.tokenNumber - left.tokenNumber
+  })
 
   const handleToggleStatus = async () => {
     const nextStatus = status === 'ACTIVE' ? 'INACTIVE' : 'ACTIVE'
@@ -220,7 +235,7 @@ function App() {
           <div>
             <p className="muted">Good morning</p>
             <h1>Today’s queue</h1>
-            {isInactive && <p className="inactive-note">Doctor is inactive. Queue actions are temporarily disabled.</p>}
+            {isInactive && <p className="inactive-note">Doctor is inactive. Existing queue can be served, but no new bookings are allowed.</p>}
           </div>
         </section>
 
@@ -252,8 +267,8 @@ function App() {
               {queue.find((item) => item.tokenNumber === currentToken)?.patientName || 'Waiting for next patient'}
             </p>
           </div>
-          <button type="button" className="primary-btn" onClick={handleNextToken} disabled={loading || isInactive}>
-            {loading ? 'Loading...' : 'Next Token'}
+          <button type="button" className="primary-btn" onClick={handleNextToken} disabled={isQueueActionDisabled}>
+            {loading ? 'Loading...' : queueActionLabel}
           </button>
         </section>
 
@@ -275,7 +290,7 @@ function App() {
                 <span>No patients waiting</span>
               </div>
             ) : (
-              queue.map((item) => (
+              queueForDisplay.map((item) => (
                 <div className="queue-row" key={item.tokenId}>
                   <span className="token-number">#{item.tokenNumber}</span>
                   <span>{item.patientName}</span>
@@ -285,7 +300,7 @@ function App() {
                       type="button"
                       className="cancel-btn"
                       onClick={() => handleCancel(item.tokenId)}
-                      disabled={isInactive}
+                      disabled={false}
                     >
                       Cancel
                     </button>

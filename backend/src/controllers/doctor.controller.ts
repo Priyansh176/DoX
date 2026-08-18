@@ -105,7 +105,9 @@ export async function advanceDoctorQueue(req: AuthenticatedRequest, res: Respons
       completedToken = servingToken.token_number;
     }
 
-    const waitingToken = queueRows.find((row) => row.status === 'WAITING');
+    const waitingToken = servingToken
+      ? null
+      : queueRows.find((row) => row.status === 'WAITING');
     let currentToken: number | null = null;
 
     if (waitingToken) {
@@ -118,17 +120,23 @@ export async function advanceDoctorQueue(req: AuthenticatedRequest, res: Respons
 
     await connection.commit();
 
+    const message = servingToken
+      ? 'Current token completed'
+      : currentToken
+        ? 'Next token started'
+        : 'No waiting patients';
+
     emitDoctorQueueUpdate(req.doctor!.id, {
       type: 'queue-updated',
       completedToken,
       currentToken,
-      message: currentToken ? 'Queue advanced' : 'No waiting patients',
+      message,
     });
 
     return res.json(successResponse({
       completedToken,
       currentToken,
-      message: currentToken ? 'Queue advanced' : 'No waiting patients',
+      message,
     }));
   } catch (error: any) {
     await connection.rollback();

@@ -186,11 +186,6 @@
   opacity: 0.84;
 }
 
-.dashboard-main-inactive .primary-btn,
-.dashboard-main-inactive .cancel-btn {
-  pointer-events: none;
-}
-
 .inactive-note {
   margin: 8px 0 0;
   font-size: 0.95rem;
