@@ -103,29 +103,68 @@
   color: #6b7280;
 }
 
-.toggle {
-  border: 1px solid #dfe3e6;
-  background: #f2f4f5;
+.availability-switch {
+  border: 1px solid #d8dee5;
+  background: #f8fafc;
   border-radius: 999px;
-  padding: 8px 14px;
-  font-weight: 600;
-  color: #303030;
+  padding: 6px 10px 6px 8px;
+  font-weight: 700;
+  color: #1f2937;
   display: inline-flex;
   align-items: center;
   gap: 10px;
+  cursor: pointer;
+  transition: all 180ms ease;
 }
 
-.toggle-dot {
-  width: 10px;
-  height: 10px;
+.availability-switch .switch-track {
+  width: 44px;
+  height: 24px;
+  border-radius: 999px;
+  background: #fca5a5;
+  position: relative;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.6);
+  transition: background 180ms ease;
+}
+
+.availability-switch .switch-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 20px;
+  height: 20px;
   border-radius: 50%;
-  background: #22c55e;
-  display: inline-block;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgba(15, 23, 42, 0.22);
+  transition: transform 180ms ease;
 }
 
-.toggle.active {
-  background: #fff9e8;
-  border-color: #f1d874;
+.availability-switch.is-active {
+  background: #ecfdf3;
+  border-color: #86efac;
+  color: #166534;
+}
+
+.availability-switch.is-active .switch-track {
+  background: #22c55e;
+}
+
+.availability-switch.is-active .switch-thumb {
+  transform: translateX(20px);
+}
+
+.availability-switch.is-inactive {
+  background: #fff1f2;
+  border-color: #fecdd3;
+  color: #9f1239;
+}
+
+.availability-switch.is-inactive .switch-track {
+  background: #fb7185;
+}
+
+.switch-label {
+  font-size: 0.85rem;
 }
 
 .logout-btn,
@@ -141,6 +180,22 @@
 
 .dashboard-main {
   margin-top: 26px;
+}
+
+.dashboard-main-inactive {
+  opacity: 0.84;
+}
+
+.dashboard-main-inactive .primary-btn,
+.dashboard-main-inactive .cancel-btn {
+  pointer-events: none;
+}
+
+.inactive-note {
+  margin: 8px 0 0;
+  font-size: 0.95rem;
+  color: #b45309;
+  font-weight: 600;
 }
 
 .welcome-row {
@@ -222,6 +277,12 @@
   cursor: pointer;
 }
 
+.primary-btn:disabled,
+.cancel-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
 .full-width {
   width: 100%;
   margin-top: 10px;
@@ -268,6 +329,31 @@
   border-radius: 999px;
   padding: 6px 10px;
   font-size: 12px;
+  font-weight: 600;
+}
+
+.status-waiting {
+  background: #fef9c3;
+  color: #854d0e;
+}
+
+.status-serving {
+  background: #dbeafe;
+  color: #1d4ed8;
+}
+
+.status-completed {
+  background: #dcfce7;
+  color: #166534;
+}
+
+.status-cancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.action-muted {
+  color: #9ca3af;
   font-weight: 600;
 }
 

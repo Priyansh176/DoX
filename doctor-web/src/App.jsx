@@ -4,6 +4,13 @@ import './App.css'
 
 const API_URL = 'http://localhost:5000'
 
+const STATUS_CLASS_MAP = {
+  WAITING: 'status-waiting',
+  SERVING: 'status-serving',
+  COMPLETED: 'status-completed',
+  CANCELLED: 'status-cancelled',
+}
+
 function App() {
   const [token, setToken] = useState('')
   const [doctor, setDoctor] = useState(null)
@@ -17,6 +24,7 @@ function App() {
     email: 'doctor@clinic.com',
     password: 'password123',
   })
+  const isInactive = status === 'INACTIVE'
 
   const apiRequest = async (url, options = {}) => {
     const response = await fetch(`${API_URL}${url}`, {
@@ -192,23 +200,27 @@ function App() {
           <div className="status-box">
             <span className="status-label">Availability</span>
             <button
-              className={`toggle ${status === 'ACTIVE' ? 'active' : ''}`}
+              className={`availability-switch ${status === 'ACTIVE' ? 'is-active' : 'is-inactive'}`}
               type="button"
               onClick={handleToggleStatus}
+              aria-pressed={status === 'ACTIVE'}
             >
-              <span className="toggle-dot" />
-              {status}
+              <span className="switch-track" aria-hidden="true">
+                <span className="switch-thumb" />
+              </span>
+              <span className="switch-label">{status === 'ACTIVE' ? 'Active' : 'Inactive'}</span>
             </button>
           </div>
           <button className="logout-btn" type="button" onClick={handleLogout}>Logout</button>
         </div>
       </header>
 
-      <main className="dashboard-main">
+      <main className={`dashboard-main ${isInactive ? 'dashboard-main-inactive' : ''}`}>
         <section className="welcome-row">
           <div>
             <p className="muted">Good morning</p>
             <h1>Today’s queue</h1>
+            {isInactive && <p className="inactive-note">Doctor is inactive. Queue actions are temporarily disabled.</p>}
           </div>
         </section>
 
@@ -240,7 +252,7 @@ function App() {
               {queue.find((item) => item.tokenNumber === currentToken)?.patientName || 'Waiting for next patient'}
             </p>
           </div>
-          <button type="button" className="primary-btn" onClick={handleNextToken} disabled={loading}>
+          <button type="button" className="primary-btn" onClick={handleNextToken} disabled={loading || isInactive}>
             {loading ? 'Loading...' : 'Next Token'}
           </button>
         </section>
@@ -267,14 +279,19 @@ function App() {
                 <div className="queue-row" key={item.tokenId}>
                   <span className="token-number">#{item.tokenNumber}</span>
                   <span>{item.patientName}</span>
-                  <span className="status-tag">{item.status}</span>
-                  <button
-                    type="button"
-                    className="cancel-btn"
-                    onClick={() => handleCancel(item.tokenId)}
-                  >
-                    Cancel
-                  </button>
+                  <span className={`status-tag ${STATUS_CLASS_MAP[item.status] || ''}`}>{item.status}</span>
+                  {item.status === 'WAITING' ? (
+                    <button
+                      type="button"
+                      className="cancel-btn"
+                      onClick={() => handleCancel(item.tokenId)}
+                      disabled={isInactive}
+                    >
+                      Cancel
+                    </button>
+                  ) : (
+                    <span className="action-muted">-</span>
+                  )}
                 </div>
               ))
             )}
