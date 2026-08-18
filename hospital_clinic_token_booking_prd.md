@@ -618,6 +618,319 @@ Patient: Rahul Sharma
 
 ---
 
+
+# 15.3 Doctor Availability Status
+
+When a doctor logs into the web dashboard, the doctor must have a prominent **status toggle** that allows them to control whether they are currently available to receive/manage patients.
+
+The status has two states:
+
+- **ACTIVE** - Doctor is available and the queue is open for token booking.
+- **INACTIVE** - Doctor is unavailable and new patients cannot book tokens for that doctor.
+
+### UI Behavior
+
+The status control should be a simple sliding toggle, positioned prominently in the dashboard header.
+
+Example:
+
+```text
+Dr. Sharma
+General Physician
+
+Availability
+[ ● ACTIVE  ]
+```
+
+When inactive:
+
+```text
+Availability
+[ INACTIVE ○ ]
+```
+
+The toggle should immediately communicate the current state through:
+
+- Toggle position
+- Short text label
+- Subtle visual state change
+
+Do not rely on color alone to communicate the state.
+
+### Status Change Flow
+
+When the doctor changes:
+
+```text
+INACTIVE → ACTIVE
+```
+
+the backend should:
+
+1. Authenticate the doctor.
+2. Update the doctor's availability status.
+3. Persist the status in SQL.
+4. Return the new status to the web application.
+5. Emit a real-time availability event.
+6. Make the doctor available for new patient token bookings.
+
+When the doctor changes:
+
+```text
+ACTIVE → INACTIVE
+```
+
+the backend should:
+
+1. Authenticate the doctor.
+2. Update the doctor's availability status.
+3. Persist the status in SQL.
+4. Return the new status to the web application.
+5. Emit a real-time availability event.
+6. Prevent new patients from booking tokens for that doctor.
+
+### Existing Queue When Doctor Becomes Inactive
+
+Changing the doctor to **INACTIVE must NOT automatically cancel existing tokens**.
+
+Existing tokens should remain in the database.
+
+Recommended behavior:
+
+```text
+ACTIVE → INACTIVE
+
+Existing queue:
+#21 WAITING
+#22 WAITING
+#23 SERVING
+
+Result:
+Existing tokens remain unchanged.
+New bookings are disabled.
+```
+
+If the doctor is currently serving a patient, that patient remains in the `SERVING` state.
+
+The doctor can still manage the existing queue after switching to inactive, unless the product later introduces a separate "close queue" function.
+
+### Patient App Behavior
+
+The patient app must reflect the doctor's current availability.
+
+If the doctor is ACTIVE:
+
+```text
+Dr. Sharma
+General Physician
+
+● Active
+8 patients waiting
+
+[ Book Token ]
+```
+
+If the doctor is INACTIVE:
+
+```text
+Dr. Sharma
+General Physician
+
+○ Currently unavailable
+
+[ Booking unavailable ]
+```
+
+The patient must not be able to create a new token while the doctor is inactive.
+
+The backend must enforce this rule. Disabling a frontend button alone is not sufficient.
+
+### Real-Time Availability Updates
+
+Availability changes should be communicated using Socket.IO.
+
+Recommended event:
+
+```text
+doctor:availability:updated
+```
+
+Payload:
+
+```json
+{
+  "doctorId": 1,
+  "status": "ACTIVE",
+  "timestamp": "2026-08-18T10:30:00Z"
+}
+```
+
+The patient application should update the doctor's availability without requiring a manual refresh.
+
+### Status Persistence
+
+The doctor's current availability must be stored in the `doctors` table.
+
+Recommended field:
+
+```text
+status ENUM('ACTIVE', 'INACTIVE')
+```
+
+Default:
+
+```text
+INACTIVE
+```
+
+A doctor should explicitly activate themselves when they are ready to accept/manage patients.
+
+### Login Behavior
+
+After successful login:
+
+1. Fetch the doctor's current status.
+2. Display the status toggle in the dashboard.
+3. Do not automatically change the status merely because the doctor logged in.
+
+This is important because **login and availability are different concepts**.
+
+Example:
+
+```text
+Doctor logs in at 8:00 AM
+Status: INACTIVE
+
+Doctor arrives at clinic
+        ↓
+Slides toggle
+        ↓
+Status: ACTIVE
+        ↓
+Patients can now book tokens
+```
+
+### Logout Behavior
+
+Logging out should NOT necessarily set the doctor to INACTIVE automatically.
+
+The doctor's availability should represent their operational status, not whether a browser session happens to be open.
+
+However, for the MVP, the system may optionally enforce an automatic inactive transition if the product specifically requires session-based availability.
+
+The preferred behavior is:
+
+**Logout ≠ Automatically inactive.**
+
+### Status API
+
+Add:
+
+```http
+GET /api/doctors/me/status
+Authorization: Bearer <JWT>
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "status": "ACTIVE"
+}
+```
+
+Update status:
+
+```http
+PATCH /api/doctors/me/status
+Authorization: Bearer <JWT>
+Content-Type: application/json
+```
+
+Request:
+
+```json
+{
+  "status": "ACTIVE"
+}
+```
+
+Response:
+
+```json
+{
+  "success": true,
+  "status": "ACTIVE"
+}
+```
+
+Allowed values:
+
+```text
+ACTIVE
+INACTIVE
+```
+
+### Status Authorization
+
+Only the authenticated doctor can modify their own status.
+
+A doctor must not be able to modify another doctor's availability through the API.
+
+### Booking Enforcement
+
+The token creation endpoint must verify:
+
+```text
+doctor exists
+        ↓
+doctor is active
+        ↓
+doctor can receive booking
+```
+
+If the doctor is inactive:
+
+```http
+POST /api/tokens
+```
+
+must return:
+
+```http
+409 Conflict
+```
+
+with:
+
+```json
+{
+  "success": false,
+  "message": "Doctor is currently unavailable for new bookings."
+}
+```
+
+### Dashboard Status Placement
+
+Recommended layout:
+
+```text
+┌──────────────────────────────────────────────────────────┐
+│ Clinic Logo                  Dr. Sharma   Availability   │
+│                                        [ ● ACTIVE ]      │
+├──────────────────────────────────────────────────────────┤
+│                                                          │
+│ Good Morning, Dr. Sharma                                │
+│                                                          │
+│ ...                                                      │
+└──────────────────────────────────────────────────────────┘
+```
+
+The status toggle should be visible without opening a settings page.
+
+This is a primary operational control, not a profile preference.
+
 # 16. UI / UX Requirements
 
 The attached image should be treated as a **visual direction**, not something to copy literally.
@@ -920,7 +1233,7 @@ name            VARCHAR
 email           VARCHAR UNIQUE
 password_hash   VARCHAR
 specialization  VARCHAR
-is_active       BOOLEAN
+status          ENUM('ACTIVE', 'INACTIVE')
 created_at      DATETIME
 updated_at      DATETIME
 ```
@@ -1849,19 +2162,29 @@ Firebase Cloud Messaging can be introduced later.
 
 # 47. Clinic / Doctor Availability
 
-MVP can use a simple field:
+Doctor availability is controlled directly from the authenticated doctor's dashboard using the **ACTIVE / INACTIVE** status toggle described in Section 15.3.
+
+The database should store:
 
 ```text
-is_active
+status ENUM('ACTIVE', 'INACTIVE')
 ```
 
 A doctor is bookable when:
 
 ```text
-doctor.is_active = true
+doctor.status = 'ACTIVE'
 ```
 
-Future version can introduce:
+A doctor who is `INACTIVE`:
+
+- Remains visible in the patient app if desired.
+- Cannot receive new token bookings.
+- Retains existing queue tokens.
+- Can still manage existing tokens from the dashboard.
+- Can switch back to `ACTIVE` at any time.
+
+Future versions can introduce scheduled availability:
 
 ```text
 Doctor Schedule
@@ -1870,7 +2193,7 @@ Tuesday: 09:00 - 13:00
 ...
 ```
 
-For the first version, avoid complex scheduling unless required.
+For the MVP, the manual status toggle is sufficient and should be the source of truth for whether new bookings are accepted.
 
 ---
 
@@ -2228,6 +2551,7 @@ The first usable version should contain ONLY:
 ## Doctor Web
 
 - [ ] Login
+- [ ] ACTIVE / INACTIVE availability toggle
 - [ ] Dashboard
 - [ ] Current token
 - [ ] Waiting queue
@@ -2249,6 +2573,9 @@ The first usable version should contain ONLY:
 ## Backend
 
 - [ ] Doctor authentication
+- [ ] Doctor availability status API
+- [ ] Booking enforcement based on doctor status
+- [ ] Real-time doctor availability events
 - [ ] Doctor APIs
 - [ ] Clinic/doctor APIs
 - [ ] Patient API
@@ -2418,6 +2745,13 @@ The MVP is considered complete when all of the following work.
 ## Doctor
 
 - [ ] Doctor can log in.
+- [ ] Doctor can see their current ACTIVE / INACTIVE status.
+- [ ] Doctor can switch their status using a sliding toggle.
+- [ ] Status changes are persisted in SQL.
+- [ ] ACTIVE status allows new token bookings.
+- [ ] INACTIVE status prevents new token bookings.
+- [ ] Existing tokens are not automatically cancelled when the doctor becomes inactive.
+- [ ] Patient app receives doctor availability changes in real time.
 - [ ] Doctor can see today's queue.
 - [ ] Doctor can see the current serving token.
 - [ ] Doctor can advance to the next patient.
