@@ -5,7 +5,7 @@ import './App.css'
 const API_URL = 'http://localhost:5000'
 
 function App() {
-  const [token, setToken] = useState(localStorage.getItem('clinicToken') || '')
+  const [token, setToken] = useState('')
   const [doctor, setDoctor] = useState(null)
   const [queue, setQueue] = useState([])
   const [currentToken, setCurrentToken] = useState(null)
@@ -56,7 +56,6 @@ function App() {
     } catch (err) {
       setError(err.message)
       setToken('')
-      localStorage.removeItem('clinicToken')
     } finally {
       setLoading(false)
     }
@@ -92,7 +91,6 @@ function App() {
 
       const nextToken = result.token
       setToken(nextToken)
-      localStorage.setItem('clinicToken', nextToken)
       setDoctor(result.doctor)
     } catch (err) {
       setError(err.message)
@@ -142,7 +140,6 @@ function App() {
     setCurrentToken(null)
     setWaitingCount(0)
     setStatus('INACTIVE')
-    localStorage.removeItem('clinicToken')
   }
 
   if (!token) {
