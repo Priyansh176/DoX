@@ -7,7 +7,7 @@
 **Web:** React  
 **Mobile:** Flutter or Kotlin  
 **Backend:** Node.js + Express  
-**Database:** MySQL / PostgreSQL  
+**Database:** MySQL (SQL relational database only)  
 **Real-Time Communication:** Socket.IO (recommended)  
 **Authentication:** JWT  
 **Reference UI:** Attached Crextio-style dashboard image
@@ -1160,7 +1160,7 @@ Recommended:
 - Node.js
 - Express.js
 - TypeScript
-- MySQL or PostgreSQL
+- MySQL only
 - Prisma / Sequelize / mysql2
 - JWT
 - bcrypt
@@ -1187,9 +1187,9 @@ Socket.IO
 
 # 23. Database
 
-MySQL is sufficient for the MVP.
+MySQL is the selected and required database for this project.
 
-PostgreSQL is also acceptable.
+The project will use a SQL relational database only. No NoSQL database is required or permitted for the MVP.
 
 The system does not require a NoSQL database.
 
@@ -2846,7 +2846,7 @@ Helmet
 ### Database
 
 ```text
-MySQL
+MySQL (SQL relational database only)
 ```
 
 ### Deployment
