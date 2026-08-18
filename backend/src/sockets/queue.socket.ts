@@ -23,3 +23,23 @@ export function setupSocket(server: any) {
 
   return io;
 }
+
+export function emitDoctorQueueUpdate(doctorId: number, payload: any) {
+  const io = (globalThis as any).__doctorSocketServer;
+  if (io) {
+    io.to(`doctor:${doctorId}`).emit('queue-updated', payload);
+  }
+}
+
+export function emitDoctorStatusUpdate(doctorId: number, payload: any) {
+  const io = (globalThis as any).__doctorSocketServer;
+  if (io) {
+    io.to(`doctor:${doctorId}`).emit('doctor-status-changed', payload);
+  }
+}
+
+export function initializeSocketServer(server: any) {
+  const io = setupSocket(server);
+  (globalThis as any).__doctorSocketServer = io;
+  return io;
+}

@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { io } from 'socket.io-client'
 import './App.css'
 
 const API_URL = 'http://localhost:5000'
@@ -62,10 +63,21 @@ function App() {
   }
 
   useEffect(() => {
-    if (token) {
-      loadDashboard()
-    }
-  }, [token])
+    if (!token) return
+
+    loadDashboard()
+
+    const socket = io(API_URL, { transports: ['websocket'] })
+    socket.emit('join-doctor-room', doctor?.id || 1)
+    socket.on('queue-updated', async () => {
+      await loadDashboard()
+    })
+    socket.on('doctor-status-changed', async () => {
+      await loadDashboard()
+    })
+
+    return () => socket.disconnect()
+  }, [token, doctor?.id])
 
   const handleLogin = async (event) => {
     event.preventDefault()

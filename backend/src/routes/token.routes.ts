@@ -3,6 +3,7 @@ import { Response } from 'express';
 import { z } from 'zod';
 import { AuthenticatedRequest, requireDoctorAuth } from '../middleware/auth.middleware';
 import { db, queryOne } from '../services/database.service';
+import { emitDoctorQueueUpdate } from '../sockets/queue.socket';
 import { errorResponse, successResponse } from '../utils/response';
 
 const router = Router();
@@ -123,6 +124,15 @@ router.post('/', async (req, res) => {
     const currentToken = queue.find((row) => row.status === 'SERVING')?.token_number || null;
     const patientsAhead = calculatePatientsAhead(queue, token!.token_number);
 
+    emitDoctorQueueUpdate(payload.doctorId, {
+      type: 'queue-updated',
+      action: 'token-created',
+      tokenNumber: token!.token_number,
+      currentToken,
+      patientsAhead,
+      estimatedWaitMinutes: patientsAhead * 5,
+    });
+
     return res.status(201).json(successResponse({
       token: {
         id: token!.id,
@@ -167,6 +177,13 @@ router.patch('/:tokenId/cancel', requireDoctorAuth, async (req: AuthenticatedReq
     'UPDATE tokens SET status = ?, cancelled_at = ? WHERE id = ?',
     ['CANCELLED', new Date(), tokenId],
   );
+
+  emitDoctorQueueUpdate(token.doctor_id, {
+    type: 'queue-updated',
+    action: 'token-cancelled',
+    tokenId,
+    status: 'CANCELLED',
+  });
 
   return res.json(successResponse({
     tokenId,

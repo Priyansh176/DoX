@@ -2,6 +2,7 @@ import { Response } from 'express';
 import { z } from 'zod';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { db, queryOne } from '../services/database.service';
+import { emitDoctorQueueUpdate, emitDoctorStatusUpdate } from '../sockets/queue.socket';
 import { errorResponse, successResponse } from '../utils/response';
 
 const statusSchema = z.object({
@@ -117,6 +118,13 @@ export async function advanceDoctorQueue(req: AuthenticatedRequest, res: Respons
 
     await connection.commit();
 
+    emitDoctorQueueUpdate(req.doctor!.id, {
+      type: 'queue-updated',
+      completedToken,
+      currentToken,
+      message: currentToken ? 'Queue advanced' : 'No waiting patients',
+    });
+
     return res.json(successResponse({
       completedToken,
       currentToken,
@@ -151,6 +159,11 @@ export async function updateDoctorStatus(req: AuthenticatedRequest, res: Respons
     }
 
     await db.execute('UPDATE doctors SET status = ? WHERE id = ?', [payload.status, req.doctor!.id]);
+
+    emitDoctorStatusUpdate(req.doctor!.id, {
+      type: 'doctor-status-changed',
+      status: payload.status,
+    });
 
     return res.json(successResponse({
       status: payload.status,

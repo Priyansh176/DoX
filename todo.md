@@ -89,7 +89,7 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 - [ ] Configure API base URL and environment values
 
 ### 2. Doctor Web Dashboard
-- [ ] Build login page
+- [x] Build login page
 - [x] Build dashboard layout shell
 - [x] Show doctor name and clinic info
 - [x] Add logout button
@@ -99,17 +99,17 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 - [x] Show waiting queue list
 - [x] Add Next Token button
 - [x] Add Cancel button for waiting tokens
-- [ ] Show empty state when no patients are waiting
-- [ ] Add loading and error states
+- [x] Show empty state when no patients are waiting
+- [x] Add loading and error states
 
 ### 3. Doctor Dashboard API Integration
-- [ ] Connect login API
-- [ ] Fetch current doctor status
-- [ ] Update doctor status via API
-- [ ] Fetch queue data
-- [ ] Call next token endpoint
-- [ ] Cancel token endpoint
-- [ ] Refresh queue after updates
+- [x] Connect login API
+- [x] Fetch current doctor status
+- [x] Update doctor status via API
+- [x] Fetch queue data
+- [x] Call next token endpoint
+- [x] Cancel token endpoint
+- [x] Refresh queue after updates
 
 ### 4. Real-Time UI Updates
 - [ ] Connect Socket.IO client to doctor room
@@ -140,9 +140,9 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 
 ### 1. Setup Database
 - [x] Create MySQL database for clinic queue project
-- [ ] Create database user and credentials
+- [x] Create database user and credentials
 - [x] Configure .env connection details
-- [ ] Test connection from backend
+- [x] Test connection from backend
 
 ### 2. Tables
 - [x] Create clinics table
@@ -183,16 +183,16 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 ## MVP Cross-Phase Checklist
 
 ### Must Have
-- [ ] Doctor login with JWT
-- [ ] Doctor ACTIVE / INACTIVE status toggle
-- [ ] New patient booking only when doctor is active
-- [ ] Token generation per doctor/day
+- [x] Doctor login with JWT
+- [x] Doctor ACTIVE / INACTIVE status toggle
+- [x] New patient booking only when doctor is active
+- [x] Token generation per doctor/day
 - [ ] Real-time queue updates via Socket.IO
-- [ ] Doctor can advance queue
-- [ ] Doctor can cancel waiting token
+- [x] Doctor can advance queue
+- [x] Doctor can cancel waiting token
 - [ ] Duplicate booking prevention
-- [ ] Queue persists in MySQL
-- [ ] Basic loading and error states
+- [x] Queue persists in MySQL
+- [x] Basic loading and error states
 
 ### Not Required in Initial MVP
 - [ ] EMR system
