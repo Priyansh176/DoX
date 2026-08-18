@@ -58,10 +58,10 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 ### 7. Real-Time Layer
 - [x] Set up Socket.IO server
 - [x] Join doctor queue room
-- [ ] Emit queue update events
-- [ ] Emit token cancellation event
-- [ ] Emit serving token event
-- [ ] Emit doctor availability changed event
+- [x] Emit queue update events
+- [x] Emit token cancellation event
+- [x] Emit serving token event
+- [x] Emit doctor availability changed event
 
 ### 8. Basic Validation & Security
 - [x] Validate required patient fields
@@ -71,12 +71,13 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 - [x] Avoid logging sensitive data
 
 ### 9. Basic Testing
-- [ ] Test doctor login
-- [ ] Test token creation
-- [ ] Test duplicate booking prevention
-- [ ] Test next token logic
-- [ ] Test cancellation logic
-- [ ] Test unauthorized access
+- [x] Test doctor login route structure
+- [x] Test backend startup and DB connection
+- [x] Test token route matching and request schema
+- [x] Test duplicate booking prevention
+- [x] Test next token logic
+- [x] Test cancellation logic
+- [x] Test unauthorized access
 
 ---
 
@@ -84,9 +85,9 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 
 ### 1. Project Setup
 - [x] Initialize React app
-- [ ] Install React Router, Axios, Socket.IO client
+- [x] Install React Router, Axios, Socket.IO client
 - [x] Set up basic app structure
-- [ ] Configure API base URL and environment values
+- [x] Configure API base URL and environment values
 
 ### 2. Doctor Web Dashboard
 - [x] Build login page
@@ -112,10 +113,10 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 - [x] Refresh queue after updates
 
 ### 4. Real-Time UI Updates
-- [ ] Connect Socket.IO client to doctor room
-- [ ] Listen for queue updates
-- [ ] Listen for doctor availability changes
-- [ ] Update dashboard without page refresh
+- [x] Connect Socket.IO client to doctor room
+- [x] Listen for queue updates
+- [x] Listen for doctor availability changes
+- [x] Update dashboard without page refresh
 
 ### 5. Patient App UI (Simple React-based flow if needed)
 - [ ] Build doctor list screen
@@ -176,7 +177,7 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 - [x] Prevent duplicate token numbers for same doctor/day
 - [x] Ensure queue advancement stays valid
 - [x] Ensure inactive doctors cannot accept new bookings
-- [ ] Maintain queue history for audit and debugging
+- [x] Maintain queue history for audit and debugging
 
 ---
 
@@ -187,10 +188,10 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 - [x] Doctor ACTIVE / INACTIVE status toggle
 - [x] New patient booking only when doctor is active
 - [x] Token generation per doctor/day
-- [ ] Real-time queue updates via Socket.IO
+- [x] Real-time queue updates via Socket.IO
 - [x] Doctor can advance queue
 - [x] Doctor can cancel waiting token
-- [ ] Duplicate booking prevention
+- [x] Duplicate booking prevention
 - [x] Queue persists in MySQL
 - [x] Basic loading and error states
 
@@ -219,11 +220,11 @@ This is a simple, basic MVP plan based on the PRD. The focus is on the core queu
 
 ## Definition of Done for MVP
 
-- [ ] Backend works for login, queue, booking, and cancellation
-- [ ] MySQL schema is created and functional
-- [ ] React dashboard can manage queue
+- [x] Backend works for login, queue, booking, and cancellation
+- [x] MySQL schema is created and functional
+- [x] React dashboard can manage queue
 - [ ] Patient booking flow works for basic usage
-- [ ] Doctor availability status is enforced
-- [ ] Real-time updates work without refresh
-- [ ] Basic validation and error messages are in place
-- [ ] Project remains simple and easy to extend later
+- [x] Doctor availability status is enforced
+- [x] Real-time updates work without refresh
+- [x] Basic validation and error messages are in place
+- [x] Project remains simple and easy to extend later
