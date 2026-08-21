@@ -41,7 +41,7 @@ class _AuthScreenState extends State<AuthScreen> {
       const SizedBox(height: 20),
       TextFormField(controller: _ageController, keyboardType: TextInputType.number, decoration: const InputDecoration(labelText: 'Age'), validator: (value) => int.tryParse(value ?? '') == null || int.parse(value!) < 1 ? 'Enter a valid age' : null),
       const SizedBox(height: 20),
-      DropdownButtonFormField<String>(value: _gender, decoration: const InputDecoration(labelText: 'Gender'), items: const [DropdownMenuItem(value: 'Male', child: Text('Male')), DropdownMenuItem(value: 'Female', child: Text('Female')), DropdownMenuItem(value: 'Other', child: Text('Other'))], onChanged: (value) => setState(() => _gender = value!)),
+      DropdownButtonFormField<String>(initialValue: _gender, decoration: const InputDecoration(labelText: 'Gender'), items: const [DropdownMenuItem(value: 'Male', child: Text('Male')), DropdownMenuItem(value: 'Female', child: Text('Female')), DropdownMenuItem(value: 'Other', child: Text('Other'))], onChanged: (value) => setState(() => _gender = value!)),
       const SizedBox(height: 30),
       ElevatedButton(onPressed: _isLoading ? null : _submit, child: Padding(padding: const EdgeInsets.symmetric(vertical: 12), child: _isLoading ? const SizedBox(height: 20, width: 20, child: CircularProgressIndicator(strokeWidth: 2)) : const Text('Continue to token booking'))),
     ]))),

@@ -5,7 +5,7 @@ import '../models.dart';
 
 class ApiException implements Exception { const ApiException(this.message); final String message; @override String toString() => message; }
 class ApiService {
-  ApiService({http.Client? client, String? baseUrl}) : _client = client ?? http.Client(), baseUrl = baseUrl ?? const String.fromEnvironment('API_URL', defaultValue: 'http://10.0.2.2:5000');
+  ApiService({http.Client? client, String? baseUrl}) : _client = client ?? http.Client(), baseUrl = baseUrl ?? const String.fromEnvironment('API_URL', defaultValue: 'http://172.17.54.228:5000');
   final http.Client _client;
   final String baseUrl;
   Future<List<Clinic>> getClinics() async { final data = await _request('GET', '/api/clinics'); return ((data['clinics'] ?? []) as List).map((item) => Clinic.fromJson(Map<String, dynamic>.from(item as Map))).toList(); }

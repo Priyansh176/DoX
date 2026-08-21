@@ -94,12 +94,23 @@ router.post('/', async (req, res) => {
       return res.status(409).json(errorResponse('You already have an active token for this doctor today.'));
     }
 
-    const patientResult = await db.execute(
-      'INSERT INTO patients (name, phone, age, gender) VALUES (?, ?, ?, ?)',
-      [payload.patient.name, payload.patient.phone, payload.patient.age, payload.patient.gender],
+    const existingPatient = await queryOne<{ id: number }>(
+      'SELECT id FROM patients WHERE phone = ? LIMIT 1',
+      [payload.patient.phone],
     );
 
-    const patientId = (patientResult[0] as any).insertId;
+    let patientId: number;
+
+    if (existingPatient) {
+      patientId = existingPatient.id;
+    } else {
+      const patientResult = await db.execute(
+        'INSERT INTO patients (name, phone, age, gender) VALUES (?, ?, ?, ?)',
+        [payload.patient.name, payload.patient.phone, payload.patient.age, payload.patient.gender],
+      );
+
+      patientId = (patientResult[0] as any).insertId;
+    }
 
     const nextTokenInsert = await db.execute(
       `INSERT INTO tokens (doctor_id, patient_id, token_number, status, booking_date)
