@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
-import 'package:waitless/Screens/auth_screen.dart';
+import '../widgets/dox_logo.dart';
+import 'doctorlist.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -9,39 +9,65 @@ class SplashScreen extends StatefulWidget {
   State<SplashScreen> createState() => _SplashScreenState();
 }
 
-class _SplashScreenState extends State<SplashScreen> {
+class _SplashScreenState extends State<SplashScreen> with SingleTickerProviderStateMixin {
+  late final AnimationController _controller;
+  late final Animation<double> _fadeAnimation;
+  late final Animation<double> _scaleAnimation;
+
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 2), () {
-      // ignore: use_build_context_synchronously
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    );
+
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.85, end: 1.0).animate(
+      CurvedAnimation(
+        parent: _controller,
+        curve: Curves.easeOutBack,
+      ),
+    );
+
+    _controller.forward();
+
+    Future.delayed(const Duration(milliseconds: 1800), () {
+      if (!mounted) return;
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (_) => const AuthScreen()),
+        PageRouteBuilder(
+          transitionDuration: const Duration(milliseconds: 400),
+          pageBuilder: (_, animation, secondaryAnimation) => const DoctorListScreen(),
+          transitionsBuilder: (_, animation, secondaryAnimation, child) =>
+              FadeTransition(opacity: animation, child: child),
+        ),
       );
     });
   }
 
   @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFF121212),
+      backgroundColor: const Color(0xFFF7F4EF),
       body: Center(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            const Icon(Icons.health_and_safety, size: 150, color: Colors.green),
-            const SizedBox(height: 18),
-            Text(
-              'Waitless App',
-              style: GoogleFonts.workSans(color: Colors.white, fontSize: 32, fontWeight: FontWeight.bold),
+        child: FadeTransition(
+          opacity: _fadeAnimation,
+          child: ScaleTransition(
+            scale: _scaleAnimation,
+            child: const DoxLogo(
+              size: DoxLogoSize.large,
             ),
-            const SizedBox(height: 10),
-            Text(
-              'Virtual Waiting Room',
-              style: GoogleFonts.fredoka(color: Colors.white70, fontSize: 16),
-              // style: TextStyle(color: Colors.white70, fontSize: 16),
-            ),
-          ],
+          ),
         ),
       ),
     );

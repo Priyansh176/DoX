@@ -1,33 +1,68 @@
 import 'package:flutter/material.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'app_state.dart';
-import 'package:waitless/Screens/splash_screen.dart';
-import 'package:waitless/notification_service.dart';
+import 'Screens/splash_screen.dart';
+import 'notification_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await NotificationService.instance.initialize();
-  runApp(const WaitlessApp());
+  runApp(const DoxApp());
 }
 
-class WaitlessApp extends StatelessWidget {
-  const WaitlessApp({super.key});
+class DoxApp extends StatelessWidget {
+  const DoxApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(                         // **************************************
-      create: (_) => AppState(),                           // **************************************
+    return ChangeNotifierProvider(
+      create: (_) => AppState(),
       child: MaterialApp(
-        debugShowCheckedModeBanner: false,                 // Remove Debug Banner
-        title: 'Waitless',
+        debugShowCheckedModeBanner: false,
+        title: 'DoX',
         theme: ThemeData(
           useMaterial3: true,
-          colorScheme: ColorScheme.fromSeed(seedColor: const Color(0xFF303030), brightness: Brightness.light),
+          textTheme: GoogleFonts.outfitTextTheme(ThemeData.light().textTheme),
+          colorScheme: ColorScheme.fromSeed(
+            seedColor: const Color(0xFF303030),
+            brightness: Brightness.light,
+          ),
           scaffoldBackgroundColor: const Color(0xFFF7F4EF),
-          appBarTheme: const AppBarTheme(backgroundColor: Color(0xFFF7F4EF), foregroundColor: Color(0xFF303030), elevation: 0),
-          cardTheme: CardThemeData(color: Colors.white, elevation: 0, shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(22))),
-          filledButtonTheme: FilledButtonThemeData(style: FilledButton.styleFrom(backgroundColor: const Color(0xFFFFD84D), foregroundColor: const Color(0xFF303030), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)), padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14))),
-          elevatedButtonTheme: ElevatedButtonThemeData(style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFFFFD84D), foregroundColor: const Color(0xFF303030), shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)))),
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Color(0xFFF7F4EF),
+            foregroundColor: Color(0xFF303030),
+            elevation: 0,
+            centerTitle: false,
+          ),
+          cardTheme: CardThemeData(
+            color: Colors.white,
+            elevation: 0,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(22),
+            ),
+          ),
+          filledButtonTheme: FilledButtonThemeData(
+            style: FilledButton.styleFrom(
+              backgroundColor: const Color(0xFFFFD84D),
+              foregroundColor: const Color(0xFF303030),
+              textStyle: GoogleFonts.outfit(fontWeight: FontWeight.w700),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+            ),
+          ),
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFFFFD84D),
+              foregroundColor: const Color(0xFF303030),
+              textStyle: GoogleFonts.outfit(fontWeight: FontWeight.w700),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+          ),
           inputDecorationTheme: const InputDecorationTheme(
             filled: true,
             fillColor: Colors.white,
@@ -35,6 +70,14 @@ class WaitlessApp extends StatelessWidget {
             border: OutlineInputBorder(
               borderRadius: BorderRadius.all(Radius.circular(14)),
               borderSide: BorderSide(color: Color(0xFFDFE3E6)),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(14)),
+              borderSide: BorderSide(color: Color(0xFFDFE3E6)),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.all(Radius.circular(14)),
+              borderSide: BorderSide(color: Color(0xFF303030), width: 1.5),
             ),
           ),
         ),

@@ -25,8 +25,8 @@ class NotificationService {
     // ignore: avoid_print
     print('NotificationService: showApproachingNotification called');
     const androidDetails = AndroidNotificationDetails(
-      'waitless_channel',
-      'Queue Notifications',
+      'dox_channel',
+      'DoX Notifications',
       importance: Importance.max,
       priority: Priority.high,
     );
@@ -37,8 +37,8 @@ class NotificationService {
 
     await _notifications.show(
       0,
-      'Your turn is approaching!!',
-      'Move to the allotted room ASAP',
+      'Your turn is approaching',
+      'Please proceed to the examination room',
       details,
     );
   }

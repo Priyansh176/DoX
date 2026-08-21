@@ -169,7 +169,7 @@ function App() {
     return (
       <div className="login-shell">
         <form className="login-card" onSubmit={handleLogin}>
-          <p className="eyebrow">Clinic portal</p>
+          <p className="eyebrow">DoX</p>
           <h1>Doctor Login</h1>
 
           <label>
@@ -204,9 +204,9 @@ function App() {
     <div className="dashboard-shell">
       <header className="topbar">
         <div className="brand-block">
-          <div className="logo-mark">C</div>
+          <div className="logo-mark">D</div>
           <div>
-            <p className="eyebrow">Clinic Queue</p>
+            <p className="eyebrow">DoX</p>
             <h2>{doctor?.name || 'Doctor'}</h2>
           </div>
         </div>
